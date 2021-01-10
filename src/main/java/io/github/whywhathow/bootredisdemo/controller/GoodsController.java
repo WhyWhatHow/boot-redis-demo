@@ -1,5 +1,6 @@
-package io.github.whywhathow.bootredisdemo.config.controller;
+package io.github.whywhathow.bootredisdemo.controller;
 
+import io.github.whywhathow.bootredisdemo.service.GoodsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,13 +19,13 @@ import java.util.concurrent.locks.ReentrantLock;
 @RestController
 @Slf4j
 public class GoodsController {
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
 
     @Value("${server.port}")
     private String serverPort;
 
-
+    // 模拟 购买 goods:001 的行为
+    @Autowired
+    GoodsService goodsService;
     /**
      * @Description: 单机, 无锁情况,在高并发情况下 出现超卖
      * @return: java.lang.String
@@ -33,7 +34,7 @@ public class GoodsController {
      **/
     @GetMapping("/buy_goods")
     public String buy_Goods() {
-        return buy();
+        return goodsService.buy(serverPort);
     }
 
     Object syncLock = new Object();
@@ -52,7 +53,7 @@ public class GoodsController {
     @GetMapping("/sync/buy_goods")
     public String buy_GoodsBySynchronized() {
         synchronized (syncLock) {
-            return buy();
+            return goodsService.buy(serverPort);
         }
     }
 
@@ -63,7 +64,7 @@ public class GoodsController {
         if (lock.tryLock()) {
             lock.lock();
             try {
-                String buy = buy();
+                String buy = goodsService.buy(serverPort);
                 return buy;
             } finally {
                 lock.unlock();
@@ -75,26 +76,5 @@ public class GoodsController {
         }
 
     }
-
-    /***
-     * 模拟 购买某一固定商品(goods:001)的过程
-     * @return
-     */
-    private String buy() {
-
-        String result = stringRedisTemplate.opsForValue().get("goods:001");
-        int goodsNumber = result == null ? 0 : Integer.parseInt(result);
-
-        if (goodsNumber > 0) {
-            int realNumber = goodsNumber - 1;
-            stringRedisTemplate.opsForValue().set("goods:001", realNumber + "");
-            System.out.println("你已经成功秒杀商品，此时还剩余：" + realNumber + "件" + "\t 服务器端口: " + serverPort);
-            return "你已经成功秒杀商品，此时还剩余：" + realNumber + "件" + "\t 服务器端口: " + serverPort;
-        } else {
-            System.out.println("商品已经售罄/活动结束/调用超时，欢迎下次光临" + "\t 服务器端口: " + serverPort);
-        }
-        return "商品已经售罄/活动结束/调用超时，欢迎下次光临" + "\t 服务器端口: " + serverPort;
-    }
-
 
 }

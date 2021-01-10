@@ -1,5 +1,6 @@
-package io.github.whywhathow.bootredisdemo.config.controller;
+package io.github.whywhathow.bootredisdemo.controller;
 
+import io.github.whywhathow.bootredisdemo.service.GoodsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,15 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @program: boot-redis-demo
- * @description: 处理分布式系统下的情况....
+ * @description: 处理分布式系统下的情况.... ,未实现 分布式锁续期(刷新锁的expire时间)
  * @author: WhyWhatHow
  * @create: 2020-12-25 14:15
  **/
@@ -119,21 +118,10 @@ public class RedisSetNxGoodsController {
      */
     String REDIS_SETNX_LOCK = "redisSetnxLock";
 
+    @Autowired
+    GoodsService service;
     private String setnxBy() {
-
-
-        String result = stringRedisTemplate.opsForValue().get("goods:001");
-        int goodsNumber = result == null ? 0 : Integer.parseInt(result);
-
-        if (goodsNumber > 0) {
-            int realNumber = goodsNumber - 1;
-            stringRedisTemplate.opsForValue().set("goods:001", realNumber + "");
-            System.out.println("你已经成功秒杀商品，此时还剩余：" + realNumber + "件" + "\t 服务器端口: " + serverPort);
-            return "你已经成功秒杀商品，此时还剩余：" + realNumber + "件" + "\t 服务器端口: " + serverPort;
-        } else {
-            System.out.println("商品已经售罄/活动结束/调用超时，欢迎下次光临" + "\t 服务器端口: " + serverPort);
-        }
-        return "商品已经售罄/活动结束/调用超时，欢迎下次光临" + "\t 服务器端口: " + serverPort;
+        return  service.buy(serverPort);
     }
 
 
