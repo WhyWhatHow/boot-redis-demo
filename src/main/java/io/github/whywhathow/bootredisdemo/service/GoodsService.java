@@ -5,6 +5,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 /**
  * @program: boot-redis-demo
  * @description: 实际购买的 业务
@@ -19,6 +21,7 @@ public class GoodsService {
      * 模拟 购买某一固定商品(goods:001)的过程
      * @return 返回购买结果
      */
+   Arrays
     public String buy(String serverPort){
         String result = redisTemplate.opsForValue().get("goods:001");
         int goodsNumber = result == null ? 0 : Integer.parseInt(result);
