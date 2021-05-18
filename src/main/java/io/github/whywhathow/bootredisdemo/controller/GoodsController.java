@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -32,12 +35,12 @@ public class GoodsController {
      * @Author: WhyWhatHow
      * @Date: 2020/12/25 15:07
      **/
-    @GetMapping("/buy_goods")
-    public String buy_Goods() {
-        return goodsService.buy(serverPort);
+    @GetMapping("/buy_goods/{goodsId}")
+    public String buy_Goods(@PathVariable("goodsId")String goodsId) {
+        return goodsService.buy(serverPort,goodsId);
     }
 
-    Object syncLock = new Object();
+   final static Object syncLock = new Object();
 
     /**
      * @Description:
@@ -50,27 +53,31 @@ public class GoodsController {
      * @Author: WhyWhatHow
      * @Date: 2020/12/25 15:08
      **/
-    @GetMapping("/sync/buy_goods")
-    public String buy_GoodsBySynchronized() {
+    @GetMapping("/sync/buy_goods/{id}")
+    public String buy_GoodsBySynchronized(@PathVariable("id")  String goodsId) {
         synchronized (syncLock) {
-            return goodsService.buy(serverPort);
+            return goodsService.buy(serverPort,goodsId);
         }
     }
 
-    ReentrantLock lock = new ReentrantLock();
+     ReentrantLock lock = new ReentrantLock();
 
-    @GetMapping("/re/buy_goods")
-    public String buy_GoodsByReentrantLock() {
-        if (lock.tryLock()) {
+    /**
+     * 测试失败, 原因吗
+     * @param goodsId
+     * @return
+     * @throws InterruptedException
+     */
+    @GetMapping("/re/buy_goods/{id}")
+    public String buy_GoodsByReentrantLock(@PathVariable("id") String goodsId) throws InterruptedException {
+        if (lock.tryLock(300, TimeUnit.MILLISECONDS)) {
             lock.lock();
             try {
-                String buy = goodsService.buy(serverPort);
+                String buy = goodsService.buy(serverPort,goodsId);
                 return buy;
             } finally {
                 lock.unlock();
             }
-
-
         } else {
             return "当前人数过多,请稍后再试!!!!!! ";
         }

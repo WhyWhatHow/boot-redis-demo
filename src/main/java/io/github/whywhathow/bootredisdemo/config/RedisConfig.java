@@ -2,6 +2,7 @@ package io.github.whywhathow.bootredisdemo.config;
 
 import org.redisson.Redisson;
 import org.redisson.config.Config;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -28,10 +29,16 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(connectionFactory);
         return redisTemplate;
     }
+
+    @Value("${spring.redis.host}")
+    String redisHost;
+    @Value("${spring.redis.port}")
+    String redisPort;
+    // 参考 https://github.com/redisson/redisson#quick-start
     @Bean
-    public Redisson redisson(){
-        Config config =new Config();
-        config.useSingleServer().setAddress("192.168.80.132").setDatabase(0);
+    public Redisson redisson() {
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://" + redisHost+":"+redisPort).setDatabase(0);
         return (Redisson) Redisson.create(config);
     }
 }

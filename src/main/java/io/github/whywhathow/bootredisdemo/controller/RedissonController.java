@@ -6,17 +6,13 @@ import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
+
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
- * cccccc
- *
  * @program: boot-redis-demo
  * @description: 实现 集群情况下, redis 分布式锁 续期 行为
  * @author: WhyWhatHow
@@ -36,13 +32,15 @@ public class RedissonController {
 
     @Value("${server.port}")
     String serverPort;
+
     /**
      * 单个redis 情况下 使用redisson 完成 分布式锁
      * 使用redisson 原因:  使用lua 脚本(在redis中属于 原子操作), 避免了加锁, 解锁时出现异常现象
+     *
      * @return
      */
-    @GetMapping("/buy_goods")
-    public String buyGoods() {
+    @GetMapping("/buy_goods/{id}")
+    public String buyGoods(@PathVariable("id") String id) {
         String result = "";
         //1 . 获取锁
         RLock lock = redisson.getLock(REDLOCK);
@@ -51,7 +49,7 @@ public class RedissonController {
             //2 . 加锁
             lock.lock(30, TimeUnit.SECONDS);
             // 3. 购买商品
-            service.buy(serverPort);
+            service.buy(serverPort, id);
 
         } catch (Exception e) {
         } finally {

@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -38,22 +36,26 @@ public class RedisSetNxGoodsController {
      * @Author: WhyWhatHow
      * @Date: 2020/12/25 15:07
      **/
-    @GetMapping("/buy_goods")
-    public String buy_GoodsPart1() {
+    @GetMapping("/buy_goods/{id}")
+    public String buy_GoodsPart1(@PathVariable("id") String id) {
         String val = UUID.randomUUID().toString() + Thread.currentThread().getName();
         String result = "";
         try {
             // 1. 尝试获取锁,redis_setnx( key   , value , ttl )
-            // 设置超时时间, 避免因为 当前服务进程出错,导致无法删除
+            // 设置超时时间, 避免因为 当前服务进程出错,导致无法删除锁对象
             Boolean aBoolean = stringRedisTemplate.opsForValue().setIfAbsent(REDIS_SETNX_LOCK, val, Duration.ofSeconds(10));
             if (aBoolean) {
                 // 2. 获取锁成功, shopping ,失败则返回提示信息
-                result = setnxBy();
+                result = setnxBy(id);
             } else {
                 result = " 获取锁失败...页面繁忙, 请稍后重试. serverPort: " + serverPort;
             }
         } catch (Exception e) {
-            // // TODO: 2021/1/3 异常出错, 需要释放锁
+            log.error("获取锁过程出现异常: exception: "+e.getMessage());
+
+            // // Question: 2021/1/3 异常出错, 需要释放锁 ,
+            //  解决方案: finally 释放锁
+
         } finally {
             // 3.  主动释放锁, 不主动释放锁的话 ,会在超时时间结束后释放锁
             // 3.1 判断锁 是否被当前线程所占有, 避免 删除其他线程的锁情况
@@ -95,7 +97,7 @@ public class RedisSetNxGoodsController {
     /**
      * 原子操作,  redis eval luascript
      * 解锁
-     *
+     *  // 官网: https://redis.io/topics/distlock
      * @param val
      * @param redisLock
      */
@@ -120,8 +122,8 @@ public class RedisSetNxGoodsController {
 
     @Autowired
     GoodsService service;
-    private String setnxBy() {
-        return  service.buy(serverPort);
+    private String setnxBy(String id ) {
+        return  service.buy(serverPort,id);
     }
 
 

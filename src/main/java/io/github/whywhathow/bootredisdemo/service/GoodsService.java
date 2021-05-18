@@ -17,23 +17,23 @@ import java.util.Arrays;
 public class GoodsService {
     @Autowired
     StringRedisTemplate redisTemplate;
+
     /***
      * 模拟 购买某一固定商品(goods:001)的过程
      * @return 返回购买结果
      */
-   Arrays
-    public String buy(String serverPort){
-        String result = redisTemplate.opsForValue().get("goods:001");
+
+    public String buy(String serverPort, String goodsID) {
+        String goods = goodsID;
+        String result = redisTemplate.opsForValue().get(goods);
         int goodsNumber = result == null ? 0 : Integer.parseInt(result);
 
         if (goodsNumber > 0) {
             int realNumber = goodsNumber - 1;
-            redisTemplate.opsForValue().set("goods:001", realNumber + "");
-            System.out.println("你已经成功秒杀商品，此时还剩余：" + realNumber + "件" + "\t 服务器端口: " + serverPort);
-            return "你已经成功秒杀商品，此时还剩余：" + realNumber + "件" + "\t 服务器端口: " + serverPort;
-        } else {
-            System.out.println("商品已经售罄/活动结束/调用超时，欢迎下次光临" + "\t 服务器端口: " + serverPort);
+            redisTemplate.opsForValue().set(goods, realNumber + "");
+            System.out.println("你: " + Thread.currentThread().getName() + "已经成功秒杀商品，此时还剩余：" + realNumber + "件" + "\t 服务器端口: " + serverPort);
+            return "你: " + Thread.currentThread().getName() + "已经成功秒杀商品，此时还剩余：" + realNumber + "件" + "\t 服务器端口: " + serverPort;
         }
-        return "商品已经售罄/活动结束/调用超时，欢迎下次光临" + "\t 服务器端口: " + serverPort;
+        return Thread.currentThread().getName() + " :商品已经售罄/活动结束/调用超时，欢迎下次光临" + "\t 服务器端口: " + serverPort;
     }
 }
