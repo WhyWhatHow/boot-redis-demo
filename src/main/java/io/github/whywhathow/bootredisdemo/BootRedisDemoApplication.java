@@ -8,8 +8,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 public class BootRedisDemoApplication {
     /**
      * 项目详细说明:
-     *     文档地址:https://www.whywhathow.fun/projects/projects-01-redis-distributedLock/
-     * 大概还有五个案例:
+     *     文档地址:https://www.whywhathow.fun/projects/projects-01-redis-distributedLock/ 大概还有五个案例:
      * 分别是:
      *      1.单机不加锁: http://localhost:1111/buy_goods/{goodsId}
      *      2. 单机加锁:  http://localhost:1111/sync/buy_goods/{id}
