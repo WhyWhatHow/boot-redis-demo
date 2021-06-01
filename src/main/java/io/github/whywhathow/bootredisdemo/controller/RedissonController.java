@@ -47,7 +47,9 @@ public class RedissonController {
         String val = UUID.randomUUID().toString() + Thread.currentThread().getName();
         try {
             //2 . 加锁
-            lock.lock(30, TimeUnit.SECONDS);
+            lock.lock();// 自动续期 100 个线程 测试成功
+//            lock.lock(30, TimeUnit.SECONDS); //success,假设业务时间为30s, 有点长.
+//            lock.lock(300,TimeUnit.MILLISECONDS);// fail 锁时间过短,报错
             // 3. 购买商品
             service.buy(serverPort, id);
 
