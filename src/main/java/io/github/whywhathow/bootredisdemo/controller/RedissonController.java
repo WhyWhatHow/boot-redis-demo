@@ -36,7 +36,9 @@ public class RedissonController {
     /**
      * 单个redis 情况下 使用redisson 完成 分布式锁
      * 使用redisson 原因:  使用lua 脚本(在redis中属于 原子操作), 避免了加锁, 解锁时出现异常现象
-     *
+     *  推荐阅读:
+            *   http://zhangtielei.com/posts/blog-redlock-reasoning.html
+            *   http://zhangtielei.com/posts/blog-redlock-reasoning-part2.html
      * @return
      */
     @GetMapping("/buy_goods/{id}")
