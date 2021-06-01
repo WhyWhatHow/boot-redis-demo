@@ -63,7 +63,8 @@ public class GoodsController {
      ReentrantLock lock = new ReentrantLock();
 
     /**
-     * 测试失败, 原因吗
+     * before测试失败: lock 上锁上了两把, 蠢
+     * now : 可以正常处理业务
      * @param goodsId
      * @return
      * @throws InterruptedException
