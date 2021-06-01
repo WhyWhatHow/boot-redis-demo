@@ -70,8 +70,8 @@ public class GoodsController {
      */
     @GetMapping("/re/buy_goods/{id}")
     public String buy_GoodsByReentrantLock(@PathVariable("id") String goodsId) throws InterruptedException {
-        if (lock.tryLock(300, TimeUnit.MILLISECONDS)) {
-            lock.lock();
+        if (lock.tryLock(30, TimeUnit.SECONDS)) {
+//            lock.lock();//stupid ,加了两把锁,他能跑动,我吃shi
             try {
                 String buy = goodsService.buy(serverPort,goodsId);
                 return buy;
