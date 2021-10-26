@@ -1,0 +1,16 @@
+version: 3
+services:
+  demo:
+    build:
+      context: services/demo/
+    container_name: demo
+    image: demo
+    ports:
+      - "8080:8080"
+    environment:
+      JVM_XMS: 256m
+      JVM_XMX: 256m
+      JVM_GC: UseG1GC
+
+
+
