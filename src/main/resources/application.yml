@@ -1,0 +1,12 @@
+server:
+  port: ${PORT:1111}
+spring:
+  redis:
+    host: 175.24.190.3   #本地开发环境,
+    port: 6379
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0

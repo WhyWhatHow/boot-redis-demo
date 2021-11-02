@@ -9,10 +9,14 @@ ENV \
 JVM_GC="UseParallelGC"\
 JVM_XMS="128m" \
 JVM_XMX="256m"  \
-JAVA_OPTS="-Xms${JVM_XMS} -Xmx${JVM_XMX}-XX:+${JVM_GC} -Djava.security.egd=file:/dev/./urandom"\
+#JAVA_OPTS="-Xms${JVM_XMS} -Xmx${JVM_XMX}-XX:+${JVM_GC} -Djava.security.egd=file:/dev/./urandom"\
+JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom"\
 PARAMS="--server.port=8080 --spring.profiles.active=prod "
 # 设置时区
 RUN /bin/cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
 COPY ./*.jar /app.jar
 #EXPOSE 8080
-ENTRYPOINT ["/bin/sh","-c","java  ${JAVA_OPTS} -jar app.jar ${PARAMS}"]
+#ENTRYPOINT ["/bin/sh","-c","java  ${JAVA_OPTS} -jar app.jar ${PARAMS}"]
+# test shell
+COPY docker-entrypoint.sh /
+ENTRYPOINT ["/docker-entrypoint.sh"]
