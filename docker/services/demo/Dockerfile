@@ -6,17 +6,21 @@ MAINTAINER whywhathow(whywhathow.fun@gmail.com)
 # GC 类型, UseG1GC,  UseParallelGC(default),  UseConcMarkSweepGC
 #ENV JAVA_OPTS="-Xms128m -Xmx256m -Djava.security.egd=file:/dev/./urandom -Dfile.encoding=utf8"  \
 ENV \
-JVM_GC="UseParallelGC"\
+# jvm 参数设置
+JVM_GC="UseConcMarkSweepGC"\
 JVM_XMS="128m" \
 JVM_XMX="256m"  \
-#JAVA_OPTS="-Xms${JVM_XMS} -Xmx${JVM_XMX}-XX:+${JVM_GC} -Djava.security.egd=file:/dev/./urandom"\
-JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom"\
-PARAMS="--server.port=8080 --spring.profiles.active=prod "
+# spring cloud, 等其他参数设置
+SERVER_PORT="8080"\
+SPRING_PROFILES_ACTIVE="prod"\
+NACOS_ADDR="121.41.120.209"\
+JAVA_RANDOM="-Djava.security.egd=file:/dev/./urandom"\
+OTHER_PARAMS="--spring.cloud.nacos.config.namespace=prod --spring.cloud.nacos.config.file-extension=yml"\
 # 设置时区
 RUN /bin/cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
 COPY ./*.jar /app.jar
 #EXPOSE 8080
 #ENTRYPOINT ["/bin/sh","-c","java  ${JAVA_OPTS} -jar app.jar ${PARAMS}"]
 # test shell
-COPY docker-entrypoint.sh /
+COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
