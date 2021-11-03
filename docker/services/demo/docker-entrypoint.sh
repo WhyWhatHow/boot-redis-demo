@@ -15,7 +15,7 @@ if [ -n "$JVM_XMX" ]; then
   JAVA_OPTS="$JAVA_OPTS -Xmx$JVM_XMX "
 fi
 if [ -n "$JVM_GC"]; then
-  JAVA_OPTS="$JAVA_OPTS -XX:+$JVM_GC "
+  JAVA_OPTS="$JAVA_OPTS -XX:$JVM_GC"
 fi
 if [-n  "$JAVA_RANDOM"];then
   JAVA_OPTS="$JAVA_OPTS $JAVA_RANDOM"

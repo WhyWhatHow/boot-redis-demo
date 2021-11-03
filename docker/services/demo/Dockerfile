@@ -7,7 +7,7 @@ MAINTAINER whywhathow(whywhathow.fun@gmail.com)
 #ENV JAVA_OPTS="-Xms128m -Xmx256m -Djava.security.egd=file:/dev/./urandom -Dfile.encoding=utf8"  \
 ENV \
 # jvm 参数设置
-JVM_GC="UseConcMarkSweepGC"\
+JVM_GC="+UseConcMarkSweepGC"\
 JVM_XMS="128m" \
 JVM_XMX="256m"  \
 # spring cloud, 等其他参数设置

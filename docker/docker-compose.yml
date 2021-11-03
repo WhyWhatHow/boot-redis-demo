@@ -10,7 +10,7 @@ services:
     environment:
       JVM_XMS: 256m
       JVM_XMX: 256m
-      JVM_GC: UseG1GC
+      JVM_GC: +UseG1GC
 
 
 
